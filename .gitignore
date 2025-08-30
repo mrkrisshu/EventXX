@@ -1,6 +1,9 @@
 node_modules
-
-# next.js
+.next
 .next/
 .next/**/*
+out
 /out/
+*.pack
+.env
+.env.local
