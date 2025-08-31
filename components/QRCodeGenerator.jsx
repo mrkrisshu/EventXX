@@ -71,13 +71,13 @@ export function QRCodeGenerator({ ticketData, onGenerated }) {
       // Create signed verification payload via metadata service
       const qrDataString = generateQRData(ticket, event)
 
-      // Generate QR code with verification data
+      // Generate QR code with verification data (inverted for black-only theme)
       const qrCodeDataUrl = await QRCode.toDataURL(qrDataString, {
         width: 300,
         margin: 2,
         color: {
-          dark: '#000000',
-          light: '#FFFFFF'
+          dark: '#FFFFFF', // QR modules
+          light: '#000000' // background
         }
       })
 
@@ -160,12 +160,12 @@ export function QRCodeGenerator({ ticketData, onGenerated }) {
             />
           </div>
           
-          <div className="flex items-center justify-center text-green-600 mb-2">
+          <div className="flex items-center justify-center text-white mb-2">
             <Check className="w-5 h-5 mr-2" />
             <span className="font-medium">QR Code Generated Successfully</span>
           </div>
           
-          <div className="flex items-center justify-center text-gray-500 text-sm">
+          <div className="flex items-center justify-center text-gray-400 text-sm">
             <Smartphone className="w-4 h-4 mr-2" />
             <span>Scan this code at the event entrance</span>
           </div>

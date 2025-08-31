@@ -94,7 +94,7 @@ export function EventCard({ event, index }) {
               <motion.div
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded text-black text-xs font-medium border border-gray-300"
+                className="px-2 py-1 bg-black/80 backdrop-blur-sm rounded text-white text-xs font-medium border border-gray-700"
               >
                 Almost Sold Out!
               </motion.div>
@@ -158,7 +158,7 @@ export function EventCard({ event, index }) {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-white text-black font-medium py-2 px-3 sm:px-4 rounded transition-all duration-300 flex items-center group/btn hover:bg-gray-200 text-sm sm:text-base touch:active:bg-gray-300"
+                className="bg-black text-white font-medium py-2 px-3 sm:px-4 rounded transition-all duration-300 flex items-center group/btn hover:bg-black/80 border border-gray-700 text-sm sm:text-base touch:active:bg-black"
               >
                 <span className="hidden sm:inline">Buy Ticket</span>
                 <span className="sm:hidden">Buy</span>
@@ -178,7 +178,7 @@ export function EventCard({ event, index }) {
               viewport={{ once: true }}
               className={`h-1 rounded ${
                 urgencyLevel === 'high' 
-                  ? 'bg-white'
+                  ? 'bg-gray-200'
                   : urgencyLevel === 'medium'
                   ? 'bg-gray-400'
                   : 'bg-gray-600'

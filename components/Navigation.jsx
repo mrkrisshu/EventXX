@@ -6,7 +6,7 @@ import { Home, Calendar, Settings, User, QrCode, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { useAppStore } from '../lib/store'
 import { ClientOnlyConnectButton } from './ClientOnlyConnectButton'
-import { ClientOnlyCreateEventButton, ClientOnlyMobileMenuButton, ClientOnlyMobileCreateEventButton, ClientOnlyDesktopButtons } from './ClientOnlyButtons'
+import { ClientOnlyMobileMenuButton, ClientOnlyDesktopButtons } from './ClientOnlyButtons'
 import ClientOnly from './ClientOnly'
 
 export function Navigation() {
@@ -79,7 +79,7 @@ export function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center space-x-2 text-white/70 hover:text-white transition-all duration-200 hover:scale-105 px-3 py-2 rounded-lg hover:bg-white/10"
+                  className="flex items-center space-x-2 text-white/70 hover:text-white transition-all duration-200 hover:scale-105 px-3 py-2 rounded-lg hover:bg:white/10"
                 >
                   <Icon className="w-4 h-4" />
                   <span className="font-medium">{item.label}</span>
@@ -88,7 +88,7 @@ export function Navigation() {
             })}
           </div>
 
-          {/* Desktop Create Event Button and Connect Button */}
+          {/* Desktop Connect Button (Create Event removed) */}
           <ClientOnlyDesktopButtons />
 
           {/* Mobile Menu Button */}
@@ -118,7 +118,7 @@ export function Navigation() {
                     <Link
                       href={item.href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center space-x-3 text-white/80 hover:text-white transition-all duration-200 py-3 px-4 rounded-lg hover:bg-white/10 touch:active:scale-95 touch:active:bg-white/20"
+                      className="flex items-center space-x-3 text:white/80 hover:text-white transition-all duration-200 py-3 px-4 rounded-lg hover:bg:white/10 touch:active:scale-95 touch:active:bg:white/20"
                     >
                       <Icon className="w-5 h-5" />
                       <span className="font-medium">{item.label}</span>
@@ -132,7 +132,7 @@ export function Navigation() {
                 transition={{ delay: navItems.length * 0.1 }}
                 className="pt-4 px-4 border-t border-white/10 space-y-3"
               >
-                <ClientOnlyMobileCreateEventButton setIsOpen={setIsOpen} />
+                {/* Create Event button removed on mobile */}
                 <ClientOnlyConnectButton />
               </motion.div>
             </div>

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Shield, AlertTriangle, TrendingUp, Users, Activity } from 'lucide-react'
 import FraudDetectionDashboard from '../../../components/FraudDetectionDashboard'
 import { fraudDetection } from '../../../lib/fraud-detection'
+import FraudAlert from '../../../components/FraudAlert'
 
 export default function FraudDetectionPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -51,7 +52,8 @@ export default function FraudDetectionPage() {
 
   return (
     <div className="min-h-screen bg-black pt-24">
-      {/* Content starts below the navigation bar */}
+      {/* Render alerts only on Security page */}
+      <FraudAlert />
 
       {/* Stats Overview */}
       <div className="container mx-auto px-4 py-8">
@@ -77,7 +79,7 @@ export default function FraudDetectionPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">High Risk Events</p>
-                <p className="text-2xl font-bold text-white">{stats.highRiskEvents}</p>
+                <p className="text-2xl font-bold text:white">{stats.highRiskEvents}</p>
               </div>
               <div className="p-3 bg-orange-500/20 rounded-lg">
                 <TrendingUp className="w-6 h-6 text-orange-400" />

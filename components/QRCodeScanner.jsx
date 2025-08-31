@@ -165,16 +165,16 @@ export function QRCodeScanner({ onScan, onError }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg">
+    <div className="bg-black rounded-2xl p-6 shadow-lg border border-gray-800">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-          <Scan className="w-6 h-6 mr-2 text-gray-600" />
+        <h3 className="text-xl font-bold text-white flex items-center">
+          <Scan className="w-6 h-6 mr-2 text-gray-400" />
           QR Code Scanner
         </h3>
         {isScanning ? (
           <button
             onClick={stopScanning}
-            className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="flex items-center px-3 py-2 bg-black text-white rounded-lg hover:bg-black/80 border border-gray-700 transition-colors"
           >
             <StopCircle className="w-4 h-4 mr-2" />
             Stop Scan
@@ -182,7 +182,7 @@ export function QRCodeScanner({ onScan, onError }) {
         ) : (
           <button
             onClick={startScanning}
-            className="flex items-center px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center px-3 py-2 bg-black text-white rounded-lg hover:bg-black/80 border border-gray-700 transition-colors"
           >
             <Camera className="w-4 h-4 mr-2" />
             Start Scan
@@ -191,25 +191,25 @@ export function QRCodeScanner({ onScan, onError }) {
       </div>
 
       {error && (
-        <div className="flex items-center p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
-          <X className="w-5 h-5 text-red-500 mr-2" />
-          <span className="text-red-700">{error}</span>
+        <div className="flex items-center p-4 bg-black/60 border border-gray-700 rounded-lg mb-4">
+          <X className="w-5 h-5 text-white mr-2" />
+          <span className="text-gray-200">{error}</span>
         </div>
       )}
 
       {hasPermission === false && (
-        <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
-          <AlertTriangle className="w-5 h-5 text-yellow-500 mr-2" />
-          <span className="text-yellow-700">
+        <div className="flex items-center p-4 bg-black/60 border border-gray-700 rounded-lg mb-4">
+          <AlertTriangle className="w-5 h-5 text-white mr-2" />
+          <span className="text-gray-200">
             Camera permission is required for QR code scanning
           </span>
         </div>
       )}
 
       {!hasCamera && (
-        <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
-          <AlertTriangle className="w-5 h-5 text-yellow-500 mr-2" />
-          <span className="text-yellow-700">No camera detected on this device</span>
+        <div className="flex items-center p-4 bg-black/60 border border-gray-700 rounded-lg mb-4">
+          <AlertTriangle className="w-5 h-5 text-white mr-2" />
+          <span className="text-gray-200">No camera detected on this device</span>
         </div>
       )}
 
@@ -225,26 +225,26 @@ export function QRCodeScanner({ onScan, onError }) {
 
             {/* Scanning overlay */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 border-2 border-gray-500 rounded-lg">
+              <div className="w-48 h-48 border-2 border-gray-600 rounded-lg">
                 <motion.div
                   animate={{ y: [0, 192, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                  className="w-full h-0.5 bg-gray-500 shadow-lg"
+                  className="w-full h-0.5 bg-gray-600 shadow-lg"
                 />
               </div>
             </div>
 
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black/50 px-3 py-1 rounded">
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black/70 px-3 py-1 rounded border border-gray-700">
               Position QR code within the frame
             </div>
           </div>
         )}
 
         {!isScanning && (
-          <div className="flex items-center justify-center h-64 bg-gray-100 rounded-xl">
+          <div className="flex items-center justify-center h-64 bg-black/60 rounded-xl border border-gray-800">
             <div className="text-center">
-              <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Click "Start Scan" to begin scanning tickets</p>
+              <Camera className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-400">Click "Start Scan" to begin scanning tickets</p>
             </div>
           </div>
         )}
@@ -254,32 +254,28 @@ export function QRCodeScanner({ onScan, onError }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`mt-4 p-4 rounded-lg border ${
-            scanResult.success
-              ? 'bg-green-50 border-green-200'
-              : 'bg-red-50 border-red-200'
-          }`}
+          className={`mt-4 p-4 rounded-lg border bg-black/60 border-gray-700`}
         >
           <div className="flex items-center">
             {scanResult.success ? (
-              <Check className="w-5 h-5 text-green-500 mr-2" />
+              <Check className="w-5 h-5 text-white mr-2" />
             ) : (
-              <X className="w-5 h-5 text-red-500 mr-2" />
+              <X className="w-5 h-5 text-white mr-2" />
             )}
-            <span className={scanResult.success ? 'text-green-700' : 'text-red-700'}>
+            <span className="text-gray-200">
               {scanResult.message}
             </span>
           </div>
 
           {scanResult.success && scanResult.data && (
-            <div className="mt-2 text-sm text-gray-600">
-              <p><strong>Ticket ID:</strong> {scanResult.data.ticketId}</p>
-              <p><strong>Event ID:</strong> {scanResult.data.eventId}</p>
+            <div className="mt-2 text-sm text-gray-400">
+              <p><strong className="text-gray-300">Ticket ID:</strong> {scanResult.data.ticketId}</p>
+              <p><strong className="text-gray-300">Event ID:</strong> {scanResult.data.eventId}</p>
               {scanResult.data.owner && (
-                <p><strong>Owner:</strong> {scanResult.data.owner?.slice(0, 10)}...</p>
+                <p><strong className="text-gray-300">Owner:</strong> {scanResult.data.owner?.slice(0, 10)}...</p>
               )}
               {scanResult.data.validSignature !== undefined && (
-                <p><strong>Signature:</strong> {scanResult.data.validSignature ? 'Valid' : 'Not present/invalid'}</p>
+                <p><strong className="text-gray-300">Signature:</strong> {scanResult.data.validSignature ? 'Valid' : 'Not present/invalid'}</p>
               )}
             </div>
           )}

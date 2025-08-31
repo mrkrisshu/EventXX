@@ -8,17 +8,17 @@
   }
   
   .bg-purple-dark {
-    background: linear-gradient(135deg, #0a0510 0%, #0c1022 25%, #071830 50%, #1e1429 75%, #221630 100%);
+    background: #000 !important;
   }
   
   .bg-purple-gradient {
-    background: linear-gradient(to bottom right, #050510, #0a0510, #0c1022, #1e1429);
+    background: #000 !important;
   }
   
   .bg-purple-card {
-    background: rgba(30, 20, 41, 0.7);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(50, 36, 70, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   
   .text-purple-light {
@@ -26,25 +26,40 @@
   }
   
   .border-purple-soft {
-    border-color: rgba(50, 36, 70, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
   }
   
   .dark-card {
-    background: rgba(15, 15, 25, 0.7);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(40, 40, 60, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   
   .dark-glass {
-    background: rgba(20, 20, 30, 0.7);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(40, 40, 60, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
+
+  /* Override Tailwind gradient background utilities to force black */
+  .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t, .bg-gradient-to-b,
+  .bg-gradient-to-tr, .bg-gradient-to-tl, .bg-gradient-to-br, .bg-gradient-to-bl {
+    background-image: none !important;
+    background-color: #000 !important;
+  }
+
+  /* Force white utility backgrounds to black for black-only theme */
+  .bg-white { background-color: #000 !important; }
+  [class*="bg-white"] { background-color: #000 !important; }
+  .bg-gray-50 { background-color: #000 !important; }
+  /* Common text utilities that would turn text dark: flip to white */
+  .text-black { color: #fff !important; }
+  .text-gray-900 { color: #fff !important; }
 }
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -67,7 +82,7 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -100,32 +115,44 @@
 
 @layer components {
   .gradient-bg {
-    background: linear-gradient(135deg, #2a3365 0%, #3a2551 100%);
+    background: #000 !important;
   }
   
   .glass-effect {
-    background: rgba(20, 20, 35, 0.7);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(40, 40, 60, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   
   .neon-glow {
-    box-shadow: 0 0 5px theme('colors.blue.400'),
-                0 0 10px theme('colors.blue.400'),
-                0 0 15px theme('colors.blue.400'),
-                0 0 20px theme('colors.blue.400');
+    box-shadow: 0 0 5px #fff1,
+                0 0 10px #fff1,
+                0 0 15px #fff1,
+                0 0 20px #fff1;
   }
   
   .card-hover {
     @apply transition-all duration-300 hover:scale-105 hover:shadow-xl;
   }
   
+  /* Monochrome black buttons */
   .btn-primary {
-    @apply bg-gradient-to-r from-blue-500 to-gray-600 hover:from-blue-600 hover:to-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg;
+    @apply text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border;
+    background-color: #000;
+    border-color: rgba(255,255,255,0.15);
+  }
+  .btn-primary:hover {
+    background-color: #0a0a0a;
+    border-color: rgba(255,255,255,0.25);
   }
   
   .btn-secondary {
-    @apply bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300;
+    @apply text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 border;
+    background-color: transparent;
+    border-color: rgba(255,255,255,0.25);
+  }
+  .btn-secondary:hover {
+    background-color: #0a0a0a;
   }
   
   .connect-button-wrapper {
@@ -133,11 +160,15 @@
   }
   
   .connect-button-wrapper button {
-    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-blue-500/50 hover:border-blue-400 backdrop-blur-sm;
+    @apply text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg border backdrop-blur-sm;
+    background-color: #000;
+    border-color: rgba(255,255,255,0.15);
   }
   
   .connect-button-wrapper button:hover {
-    @apply scale-105 shadow-blue-500/25;
+    @apply scale-105;
+    background-color: #0a0a0a;
+    border-color: rgba(255,255,255,0.25);
   }
 }
 
@@ -147,16 +178,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #1f2937;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  background: #374151;
 }
 
 /* Animations */
@@ -183,7 +214,7 @@
 }
 
 .shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
 }

@@ -4,7 +4,6 @@ import { Inter } from 'next/font/google'
 import { Providers } from './providers'
 import { Toaster } from 'react-hot-toast'
 import { Navigation } from '../components/Navigation'
-import FraudAlert from '../components/FraudAlert'
 import { useEffect } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -47,10 +46,6 @@ export default function RootLayout({
         <Providers>
           <Navigation />
           {children}
-          <FraudAlert onAlertClick={(alert) => {
-            console.log('Fraud alert clicked:', alert)
-            // Could navigate to fraud detection dashboard
-          }} />
           <Toaster
             position="top-right"
             toastOptions={{
