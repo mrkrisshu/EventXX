@@ -13,10 +13,10 @@ import { StatsSection } from '@/components/StatsSection.jsx'
 const mockEvents = [
   {
     id: 1,
-    title: 'Blockchain Summit 2024',
+    title: 'Blockchain Summit 2025',
     description: 'The biggest blockchain conference of the year featuring industry leaders and innovators.',
     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500&h=300&fit=crop',
-    date: '2024-03-15',
+    date: '2025-09-30',
     location: 'San Francisco, CA',
     price: '0.5',
     currency: 'AVAX',
@@ -30,7 +30,7 @@ const mockEvents = [
     title: 'NFT Art Gallery Opening',
     description: 'Exclusive opening of the first NFT art gallery featuring digital masterpieces.',
     image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500&h=300&fit=crop',
-    date: '2024-03-20',
+    date: '2025-09-20',
     location: 'New York, NY',
     price: '0.2',
     currency: 'AVAX',
@@ -44,7 +44,7 @@ const mockEvents = [
     title: 'DeFi Workshop Series',
     description: 'Learn about decentralized finance from experts in the field.',
     image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&h=300&fit=crop',
-    date: '2024-03-25',
+    date: '2025-09-25',
     location: 'Austin, TX',
     price: '0.1',
     currency: 'AVAX',
@@ -58,7 +58,7 @@ const mockEvents = [
     title: 'Metaverse Gaming Convention',
     description: 'Explore the future of gaming in virtual worlds and blockchain integration.',
     image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&h=300&fit=crop',
-    date: '2024-04-01',
+    date: '2025-10-01',
     location: 'Los Angeles, CA',
     price: '0.3',
     currency: 'AVAX',
@@ -250,7 +250,7 @@ export default function HomePage() {
           
           <div className="border-t border-white/10 mt-12 pt-8 text-center">
             <p className="text-white/60">
-              © 2024 EventXX. All rights reserved. Built on Avalanche.
+              © 2025 EventXX. All rights reserved. Built on Avalanche.
             </p>
           </div>
         </div>

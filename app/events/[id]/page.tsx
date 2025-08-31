@@ -8,14 +8,15 @@ import { useAccount } from 'wagmi'
 import { QRCodeGenerator } from '../../../components/QRCodeGenerator'
 import { useAppStore } from '../../../lib/store'
 import { ClientOnlyConnectButtonCustom } from '../../../components/ClientOnlyConnectButton'
+import { formatEventDate } from '../../../lib/wallet'
 
 // Mock event data - in a real app, this would come from an API or database
 const mockEvent = {
   id: '1',
-  title: 'Blockchain Summit 2024',
+  title: 'Blockchain Summit 2025',
   description: 'Join the biggest blockchain conference of the year featuring industry leaders, innovative projects, and networking opportunities.',
   longDescription: `
-    The Blockchain Summit 2024 is the premier event for blockchain enthusiasts, developers, and industry professionals. 
+    The Blockchain Summit 2025 is the premier event for blockchain enthusiasts, developers, and industry professionals. 
     
     This two-day conference will feature:
     - Keynote speeches from blockchain pioneers
@@ -27,7 +28,7 @@ const mockEvent = {
     Don't miss this opportunity to be part of the blockchain revolution!
   `,
   image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop',
-  date: '2024-03-15',
+  date: '2025-09-15',
   time: '09:00 AM',
   location: 'San Francisco Convention Center',
   price: '0.1',
@@ -187,8 +188,8 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
               <div className="flex items-center text-white/70">
                 <Calendar className="w-5 h-5 mr-3 text-gray-400" />
                 <div>
-                  <div className="font-medium text-white">{(currentEvent as any).date || new Date((currentEvent as any).eventDate * 1000).toLocaleDateString()}</div>
-                  <div className="text-sm">{(currentEvent as any).time || new Date((currentEvent as any).eventDate * 1000).toLocaleTimeString()}</div>
+                  <div className="font-medium text-white">{(currentEvent as any).date || formatEventDate((currentEvent as any).eventDate)}</div>
+                  <div className="text-sm">{(currentEvent as any).time || ''}</div>
                 </div>
               </div>
               
@@ -393,7 +394,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                       Ticket #{ticket.ticketNumber}
                     </h3>
                     <p className="text-white/60 text-sm">
-                      Purchased: {new Date(ticket.purchaseDate).toLocaleDateString()}
+                      Purchased: {formatEventDate(Math.floor(ticket.purchaseDate / 1000))}
                     </p>
                   </div>
                   

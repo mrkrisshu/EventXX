@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { Ticket, Event } from '@/lib/wallet'
-import { formatEventDate, getTimeUntilEvent } from '@/lib/wallet'
+import { formatEventDate } from '@/lib/wallet'
 import { MetadataService } from '@/lib/metadata'
 import { AlertCircle, ExternalLink, Share2, Eye, ShoppingCart, Tag } from 'lucide-react'
 import QRCode from 'qrcode'
@@ -47,6 +47,7 @@ export default function TicketMarketplace() {
 
   // Mock marketplace listings for demo
   useEffect(() => {
+    const nowSec = Math.floor(Date.now() / 1000)
     const mockListings: MarketplaceListing[] = [
       {
         ticketId: 101,
@@ -54,12 +55,12 @@ export default function TicketMarketplace() {
         seller: '0x1234...5678',
         price: '0.08',
         originalPrice: '0.1',
-        eventName: 'Tech Conference 2024',
-        eventDate: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        eventName: 'Tech Conference 2025',
+        eventDate: nowSec + 7 * 24 * 60 * 60,
         location: 'Convention Center',
         seatNumber: 'A-15',
         isVerified: true,
-        listingDate: Date.now() - 2 * 24 * 60 * 60 * 1000
+        listingDate: nowSec - 2 * 24 * 60 * 60
       },
       {
         ticketId: 102,
@@ -68,10 +69,10 @@ export default function TicketMarketplace() {
         price: '0.15',
         originalPrice: '0.2',
         eventName: 'Music Festival',
-        eventDate: Date.now() + 14 * 24 * 60 * 60 * 1000,
+        eventDate: nowSec + 14 * 24 * 60 * 60,
         location: 'Central Park',
         isVerified: true,
-        listingDate: Date.now() - 1 * 24 * 60 * 60 * 1000
+        listingDate: nowSec - 1 * 24 * 60 * 60
       }
     ]
     setListings(mockListings)
@@ -114,7 +115,7 @@ export default function TicketMarketplace() {
         eventDate: event.eventDate,
         location: event.location,
         isVerified: true,
-        listingDate: Date.now()
+        listingDate: Math.floor(Date.now() / 1000)
       }
 
       setListings(prev => [newListing, ...prev])

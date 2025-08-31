@@ -720,9 +720,17 @@ export async function createProviderWithFallback(isTestnet: boolean = true, maxR
 
 // Helper function to get contract instance
 export function getEventTicketsContract(provider: any, isTestnet: boolean = true) {
-  const contractAddress = isTestnet 
-    ? CONTRACT_ADDRESSES.FUJI_TESTNET.EVENT_TICKETS 
-    : CONTRACT_ADDRESSES.MAINNET.EVENT_TICKETS
+  const envAddress = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '').trim()
+  const useEnv = isTestnet && !!envAddress && ethers.isAddress(envAddress)
+  const contractAddress = useEnv
+    ? envAddress
+    : (isTestnet 
+      ? CONTRACT_ADDRESSES.FUJI_TESTNET.EVENT_TICKETS 
+      : CONTRACT_ADDRESSES.MAINNET.EVENT_TICKETS)
+
+  if (!ethers.isAddress(contractAddress)) {
+    throw new Error('Invalid contract address. Please set NEXT_PUBLIC_CONTRACT_ADDRESS to a valid address.')
+  }
   
   return new ethers.Contract(contractAddress, EVENT_TICKETS_ABI, provider)
 }
@@ -768,6 +776,18 @@ export class EventTicketsService {
     location: string
   }) {
     if (!this.signer) throw new Error('Signer required for creating events')
+
+    // Ensure contract is actually deployed at configured address to avoid silent failures
+    try {
+      const contractAddress: string = (this.contract as any).target || (this.contract as any).address
+      const code = await this.provider.getCode(contractAddress)
+      if (!code || code === '0x') {
+        throw new Error(`No contract deployed at ${contractAddress} on the connected network. Set NEXT_PUBLIC_CONTRACT_ADDRESS to your deployed EventTickets contract on Avalanche Fuji.`)
+      }
+    } catch (e) {
+      // If provider.getCode throws, surface a clear error
+      throw e
+    }
     
     // Validate event with fraud detection
     const organizerAddress = await this.signer.getAddress()

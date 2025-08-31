@@ -357,29 +357,35 @@ export const walletService = new WalletService()
 
 // Helper function to format date
 export function formatEventDate(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+  // Ensure deterministic output across environments by formatting in UTC with a stable locale
+  const date = new Date(timestamp * 1000)
+  const formatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'UTC',
+    timeZoneName: 'short'
   })
+  return formatter.format(date)
 }
 
 // Helper function to get time until event
 export function getTimeUntilEvent(timestamp: number): string {
-  const now = Date.now()
-  const eventTime = timestamp * 1000
-  const diff = eventTime - now
-  
-  if (diff <= 0) {
+  // Work in whole seconds to avoid small SSR/CSR drift due to milliseconds
+  const nowSec = Math.floor(Date.now() / 1000)
+  const diffSec = Math.max(0, timestamp - nowSec)
+
+  if (diffSec === 0) {
     return 'Event has started'
   }
-  
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  
+
+  const days = Math.floor(diffSec / (60 * 60 * 24))
+  const hours = Math.floor((diffSec % (60 * 60 * 24)) / (60 * 60))
+  const minutes = Math.floor((diffSec % (60 * 60)) / 60)
+
   if (days > 0) {
     return `${days}d ${hours}h ${minutes}m`
   } else if (hours > 0) {
@@ -395,7 +401,7 @@ export function generateTicketQRData(tokenId: number, eventId: number, owner: st
     tokenId,
     eventId,
     owner,
-    timestamp: Date.now(),
+    timestamp: Math.floor(Date.now() / 1000),
     type: 'EventXX_Ticket'
   })
 }

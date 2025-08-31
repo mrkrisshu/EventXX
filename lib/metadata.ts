@@ -193,11 +193,12 @@ export class MetadataService {
    * Store metadata locally as fallback
    */
   private static storeLocally(metadata: NFTMetadata): string {
-    const id = Date.now().toString()
+    const nowSec = Math.floor(Date.now() / 1000)
+    const id = nowSec.toString()
     const localMetadata = {
       id,
       metadata,
-      timestamp: Date.now()
+      timestamp: nowSec
     }
     
     // Store in localStorage for demo purposes
@@ -221,7 +222,7 @@ export class MetadataService {
       eventName: event.name,
       eventDate: event.eventDate,
       isUsed: ticket.isUsed,
-      timestamp: Date.now(),
+      timestamp: Math.floor(Date.now() / 1000),
       signature: this.generateSignature(ticket, event)
     })
   }

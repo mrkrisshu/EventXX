@@ -14,10 +14,15 @@ export function EventCard({ event, index }) {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
+    // Use UTC formatting for deterministic SSR-safe output
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      timeZone: 'UTC'
+    })
     return {
-      day: date.getDate(),
-      month: date.toLocaleDateString('en-US', { month: 'short' }),
-      year: date.getFullYear()
+      day: date.getUTCDate(),
+      month: formatter.format(date),
+      year: date.getUTCFullYear()
     }
   }
 

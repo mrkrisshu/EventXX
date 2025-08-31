@@ -79,7 +79,7 @@ export function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center space-x-2 text-white/70 hover:text-white transition-all duration-200 hover:scale-105 px-3 py-2 rounded-lg hover:bg:white/10"
+                  className="flex items-center space-x-2 text-white/70 hover:text-white transition-all duration-200 hover:scale-105 px-3 py-2 rounded-lg hover:bg-white/10"
                 >
                   <Icon className="w-4 h-4" />
                   <span className="font-medium">{item.label}</span>
@@ -118,7 +118,7 @@ export function Navigation() {
                     <Link
                       href={item.href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center space-x-3 text:white/80 hover:text-white transition-all duration-200 py-3 px-4 rounded-lg hover:bg:white/10 touch:active:scale-95 touch:active:bg:white/20"
+                      className="flex items-center space-x-3 text-white/80 hover:text-white transition-all duration-200 py-3 px-4 rounded-lg hover:bg-white/10 touch:active:scale-95 touch:active:bg-white/20"
                     >
                       <Icon className="w-5 h-5" />
                       <span className="font-medium">{item.label}</span>

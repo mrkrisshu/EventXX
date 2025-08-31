@@ -12,8 +12,8 @@ import { ClientOnlyConnectButton } from '../../components/ClientOnlyConnectButto
 const mockOrganizerEvents = [
   {
     id: '1',
-    title: 'Blockchain Summit 2024',
-    date: '2024-03-15',
+    title: 'Blockchain Summit 2025',
+    date: '2025-09-15',
     time: '09:00 AM',
     location: 'San Francisco Convention Center',
     price: '0.1',
@@ -27,7 +27,7 @@ const mockOrganizerEvents = [
   {
     id: '2',
     title: 'NFT Art Gallery Opening',
-    date: '2024-03-20',
+    date: '2025-09-20',
     time: '07:00 PM',
     location: 'Digital Art Museum, NYC',
     price: '0.05',
@@ -41,7 +41,7 @@ const mockOrganizerEvents = [
   {
     id: '3',
     title: 'Web3 Gaming Tournament',
-    date: '2024-02-28',
+    date: '2025-09-28',
     time: '12:00 PM',
     location: 'Gaming Arena, Los Angeles',
     price: '0.08',
@@ -523,7 +523,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    date: '',
+    date: '2025-09-15',
     time: '',
     location: '',
     price: '',
@@ -535,11 +535,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!isConnected) {
-      alert('Please connect your wallet first')
-      return
-    }
-    
+    // Do not hard-block on wagmi isConnected; the store will request wallet connection if needed
     setIsCreating(true)
     try {
       // Combine date and time

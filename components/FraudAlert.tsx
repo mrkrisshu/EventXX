@@ -11,7 +11,8 @@ interface FraudAlert {
   severity: 'low' | 'medium' | 'high' | 'critical'
   title: string
   description: string
-  timestamp: Date
+  // store as unix seconds for consistency
+  timestamp: number
   data?: any
 }
 
@@ -55,7 +56,7 @@ export default function FraudAlert({ onAlertClick }: FraudAlertProps) {
         type,
         severity,
         ...alertTemplates[type],
-        timestamp: new Date(),
+        timestamp: Math.floor(Date.now() / 1000),
         data: {
           riskScore: Math.random() * 0.4 + 0.6, // 0.6 - 1.0
           address: '0x' + Math.random().toString(16).substr(2, 8) + '...' + Math.random().toString(16).substr(2, 4)
@@ -79,28 +80,24 @@ export default function FraudAlert({ onAlertClick }: FraudAlertProps) {
     return () => clearInterval(interval)
   }, [])
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityColor = (severity: FraudAlert['severity']) => {
     switch (severity) {
-      case 'critical': return 'from-red-500 to-red-600'
-      case 'high': return 'from-orange-500 to-red-500'
-      case 'medium': return 'from-yellow-500 to-orange-500'
-      case 'low': return 'from-blue-500 to-purple-500'
-      default: return 'from-gray-500 to-gray-600'
+      case 'low': return 'from-green-500/20 to-green-600/30'
+      case 'medium': return 'from-yellow-500/20 to-yellow-600/30'
+      case 'high': return 'from-orange-500/20 to-orange-600/30'
+      case 'critical': return 'from-red-500/20 to-red-600/30'
+      default: return 'from-gray-500/20 to-gray-600/30'
     }
   }
 
-  const getSeverityIcon = (type: string) => {
+  const getSeverityIcon = (type: FraudAlert['type']) => {
     switch (type) {
-      case 'high_risk_event': return AlertTriangle
-      case 'suspicious_transfer': return User
-      case 'blacklisted_address': return Shield
+      case 'high_risk_event': return Shield
+      case 'suspicious_transfer': return AlertTriangle
+      case 'blacklisted_address': return User
       case 'rapid_transfers': return Clock
       default: return AlertTriangle
     }
-  }
-
-  const dismissAlert = (alertId: string) => {
-    setAlerts(prev => prev.filter(alert => alert.id !== alertId))
   }
 
   if (!isVisible || alerts.length === 0) return null
@@ -131,7 +128,14 @@ export default function FraudAlert({ onAlertClick }: FraudAlertProps) {
                       <p className="text-white/80 text-xs mt-1 line-clamp-2">{alert.description}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <span className="text-white/60 text-xs">
-                          {alert.timestamp.toLocaleTimeString()}
+                          {new Intl.DateTimeFormat('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true,
+                            timeZone: 'UTC',
+                            timeZoneName: 'short'
+                          }).format(new Date(alert.timestamp * 1000))}
                         </span>
                         {alert.data?.riskScore && (
                           <span className="text-white/80 text-xs bg-white/20 px-2 py-1 rounded">
@@ -142,19 +146,16 @@ export default function FraudAlert({ onAlertClick }: FraudAlertProps) {
                     </div>
                   </div>
                   <button
+                    className="text-white/70 hover:text-white"
                     onClick={(e) => {
                       e.stopPropagation()
-                      dismissAlert(alert.id)
+                      setAlerts(prev => prev.filter(a => a.id !== alert.id))
                     }}
-                    className="p-1 hover:bg-white/20 rounded transition-colors"
                   >
-                    <X className="w-4 h-4 text-white/60" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
-              
-              {/* Severity indicator */}
-              <div className={`h-1 bg-gradient-to-r ${getSeverityColor(alert.severity)} opacity-60`} />
             </motion.div>
           )
         })}

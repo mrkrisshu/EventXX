@@ -76,18 +76,23 @@ export default async function handler(
     ctx.font = 'normal 18px Inter, Arial, sans-serif'
     ctx.fillText(`Ticket #${ticketId}`, 60, 130)
 
-    // Event details
+    // Event details - use UTC formatting for deterministic output
     const eventDateObj = new Date(String(eventDate))
-    const formattedDate = eventDateObj.toLocaleDateString('en-US', {
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'UTC'
     })
-    const formattedTime = eventDateObj.toLocaleTimeString('en-US', {
+    const timeFormatter = new Intl.DateTimeFormat('en-US', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'UTC'
     })
+    const formattedDate = dateFormatter.format(eventDateObj)
+    const formattedTime = timeFormatter.format(eventDateObj)
 
     ctx.fillStyle = '#2d3748'
     ctx.font = 'normal 16px Inter, Arial, sans-serif'
@@ -105,7 +110,7 @@ export default async function handler(
       eventName: String(eventName),
       eventDate: String(eventDate),
       venue: String(venue),
-      timestamp: Date.now(),
+      timestamp: Math.floor(Date.now() / 1000),
       type: 'EventXX_Ticket'
     })
 

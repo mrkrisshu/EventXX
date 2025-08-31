@@ -224,7 +224,7 @@ export function HeroSection() {
                     <Sparkles className="w-6 h-6 text-blue-400" />
                     <span className="text-white/60 text-sm">#NFT001</span>
                   </div>
-                  <h3 className="text-white font-bold text-lg mb-2">Blockchain Summit 2024</h3>
+                  <h3 className="text-white font-bold text-lg mb-2">Blockchain Summit 2025</h3>
                   <p className="text-white/60 text-sm mb-4">San Francisco, CA</p>
                   <div className="flex justify-between items-center">
                     <span className="text-white font-semibold">0.5 AVAX</span>

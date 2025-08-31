@@ -11,8 +11,8 @@ const mockVerifiedTickets = new Set()
 const mockEventData = {
   'EVENT_123': {
     id: 'EVENT_123',
-    title: 'Blockchain Summit 2024',
-    date: '2024-03-15',
+    title: 'Blockchain Summit 2025',
+    date: '2025-09-15',
     location: 'San Francisco Convention Center',
     totalTickets: 1000,
     checkedIn: 0

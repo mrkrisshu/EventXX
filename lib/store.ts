@@ -176,10 +176,7 @@ export const useAppStore = create<AppState>()(
       // Event actions
       createEvent: async (eventData: CreateEventData) => {
         try {
-          if (!get().wallet.isConnected) {
-            throw new Error('Please connect your wallet first')
-          }
-          
+          // Removed strict wallet connection guard to allow flow to request connection if needed
           // Get signer from wallet connection without overwriting wallet state
           const { signer } = await connectWallet()
           const provider = await getProvider(true) // Use Fuji testnet
@@ -292,7 +289,7 @@ export const useAppStore = create<AppState>()(
             blockchainEvents = [
               {
                 id: 1,
-                name: "Tech Conference 2024",
+                name: "Tech Conference 2025",
                 description: "Annual technology conference featuring the latest in AI, blockchain, and web development. Join industry leaders and innovators for networking and learning.",
                 organizer: "0x1234567890123456789012345678901234567890",
                 price: "0.1",
@@ -363,7 +360,7 @@ export const useAppStore = create<AppState>()(
           const mockEvents: Event[] = [
             {
               id: 1,
-              name: 'Blockchain Conference 2024',
+              name: 'Blockchain Conference 2025',
               description: 'The biggest blockchain conference of the year',
               organizer: '0x1234567890123456789012345678901234567890',
               price: '0.1',
