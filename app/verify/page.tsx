@@ -138,7 +138,7 @@ export default function VerifyPage() {
         setStats(prev => ({ ...prev, totalScanned: prev.totalScanned + 1, invalidTickets: prev.invalidTickets + 1 }))
       } else {
         // Valid ticket - mark as used
-        setUsedTickets(prev => new Set([...prev, ticketKey]))
+        setUsedTickets(prev => new Set(Array.from(prev).concat(ticketKey)))
         setStats(prev => ({ 
           ...prev, 
           totalScanned: prev.totalScanned + 1, 
