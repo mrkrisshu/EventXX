@@ -117,8 +117,8 @@ export default function OrganizerPage() {
         </div>
 
         {/* Content */}
-        {activeTab === 'overview' && <OverviewTab stats={mockStats} events={mockOrganizerEvents} />}
-        {activeTab === 'events' && <EventsTab events={mockOrganizerEvents} />}
+        {activeTab === 'overview' && <OverviewTab stats={mockStats} events={mockOrganizerEvents} onCreateEvent={() => setIsCreateEventModalOpen(true)} />}
+        {activeTab === 'events' && <EventsTab events={mockOrganizerEvents} onCreateEvent={() => setIsCreateEventModalOpen(true)} />}
         {activeTab === 'analytics' && <AnalyticsTab events={mockOrganizerEvents} />}
         {activeTab === 'verify' && <VerifyTab events={mockOrganizerEvents} />}
       </div>
@@ -131,7 +131,7 @@ export default function OrganizerPage() {
   )
 }
 
-function OverviewTab({ stats, events }: { stats: any; events: any[] }) {
+function OverviewTab({ stats, events, onCreateEvent }: { stats: any; events: any[]; onCreateEvent: () => void }) {
   const activeEvents = events.filter(event => event.status === 'active')
   const completedEvents = events.filter(event => event.status === 'completed')
 
@@ -142,6 +142,15 @@ function OverviewTab({ stats, events }: { stats: any; events: any[] }) {
         <h1 className="text-4xl font-bold text-white mb-4">Organizer Dashboard</h1>
         <p className="text-white/70 text-lg mb-8">Manage your events and track performance</p>
         
+        <motion.button
+           whileHover={{ scale: 1.05 }}
+           whileTap={{ scale: 0.95 }}
+           onClick={onCreateEvent}
+           className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg mx-auto"
+         >
+           <Plus className="w-5 h-5" />
+           <span>Create Event</span>
+         </motion.button>
       </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -219,21 +228,32 @@ function OverviewTab({ stats, events }: { stats: any; events: any[] }) {
   )
 }
 
-function EventsTab({ events }: { events: any[] }) {
+function EventsTab({ events, onCreateEvent }: { events: any[]; onCreateEvent: () => void }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white">All Events</h2>
-        <div className="flex space-x-2">
-          <button className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
-            All
-          </button>
-          <button className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
-            Active
-          </button>
-          <button className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
-            Completed
-          </button>
+        <div className="flex items-center space-x-4">
+          <div className="flex space-x-2">
+            <button className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
+              All
+            </button>
+            <button className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
+              Active
+            </button>
+            <button className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
+              Completed
+            </button>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onCreateEvent}
+            className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Event</span>
+          </motion.button>
         </div>
       </div>
 
@@ -518,7 +538,7 @@ function EventCard({ event, index, detailed = false }: { event: any; index: numb
 }
 
 function CreateEventModal({ onClose }: { onClose: () => void }) {
-  const { createEvent } = useAppStore()
+  const { createEvent, wallet } = useAppStore()
   const { isConnected } = useAccount()
   const [formData, setFormData] = useState({
     title: '',
@@ -531,15 +551,23 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
     category: 'Technology'
   })
   const [isCreating, setIsCreating] = useState(false)
+  const [creationStep, setCreationStep] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Do not hard-block on wagmi isConnected; the store will request wallet connection if needed
     setIsCreating(true)
+    setCreationStep('Preparing...')
+    
     try {
       // Combine date and time
       const eventDateTime = new Date(`${formData.date}T${formData.time}`)
+      
+      if (!wallet.isConnected) {
+        setCreationStep('Connecting wallet...')
+      } else {
+        setCreationStep('Creating event on blockchain...')
+      }
       
       await createEvent({
         name: formData.title,
@@ -550,11 +578,17 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
         location: formData.location
       })
       
-      onClose()
+      setCreationStep('Event created successfully!')
+      setTimeout(() => {
+        onClose()
+      }, 1000)
     } catch (error) {
       console.error('Failed to create event:', error)
-    } finally {
-      setIsCreating(false)
+      setCreationStep('Failed to create event')
+      setTimeout(() => {
+        setCreationStep('')
+        setIsCreating(false)
+      }, 2000)
     }
   }
 
@@ -690,7 +724,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               disabled={isCreating}
               className="flex-1 py-3 px-6 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isCreating ? 'Creating...' : 'Create Event'}
+              {isCreating ? (creationStep || 'Creating...') : 'Create Event'}
             </button>
           </div>
         </form>

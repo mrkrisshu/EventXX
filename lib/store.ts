@@ -176,9 +176,43 @@ export const useAppStore = create<AppState>()(
       // Event actions
       createEvent: async (eventData: CreateEventData) => {
         try {
-          // Removed strict wallet connection guard to allow flow to request connection if needed
-          // Get signer from wallet connection without overwriting wallet state
-          const { signer } = await connectWallet()
+          // Check if wallet is already connected
+          const { wallet } = get()
+          let signer
+          
+          if (!wallet.isConnected) {
+            // Show connecting notification
+            get().addNotification({
+              type: 'info',
+              title: 'Connecting Wallet',
+              message: 'Please connect your wallet to create an event...'
+            })
+            
+            // Connect wallet first
+            await get().connectWallet()
+            
+            // Get fresh wallet state after connection
+            const updatedState = get().wallet
+            if (!updatedState.isConnected || !updatedState.signer) {
+              throw new Error('Wallet connection failed')
+            }
+            signer = updatedState.signer
+          } else {
+            // Use existing signer or get fresh one
+            if (wallet.signer) {
+              signer = wallet.signer
+            } else {
+              const { signer: freshSigner } = await connectWallet()
+              signer = freshSigner
+            }
+          }
+          
+          get().addNotification({
+            type: 'info',
+            title: 'Creating Event',
+            message: 'Creating your event on the blockchain...'
+          })
+          
           const provider = await getProvider(true) // Use Fuji testnet
           const eventService = new EventTicketsService(provider, signer)
           
@@ -205,6 +239,7 @@ export const useAppStore = create<AppState>()(
           
           return eventId
         } catch (error: any) {
+          console.error('Create event error:', error)
           get().addNotification({
             type: 'error',
             title: 'Failed to Create Event',
