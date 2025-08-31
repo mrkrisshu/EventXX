@@ -35,7 +35,6 @@ export function ClientOnlyCreateEventButton() {
 // Client-only Desktop Buttons Container
 export function ClientOnlyDesktopButtons() {
   const [hasMounted, setHasMounted] = useState(false)
-  const { setIsCreateEventModalOpen } = useAppStore()
 
   useEffect(() => {
     setHasMounted(true)
@@ -47,15 +46,6 @@ export function ClientOnlyDesktopButtons() {
 
   return (
     <div className="hidden lg:flex items-center space-x-4">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsCreateEventModalOpen(true)}
-        className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-xl hover:shadow-2xl border-2 border-blue-400/50 hover:border-blue-300 backdrop-blur-sm"
-      >
-        <Plus className="w-4 h-4" />
-        <span>Create Event</span>
-      </motion.button>
       <ConnectButton />
     </div>
   )

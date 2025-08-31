@@ -280,29 +280,15 @@ export default function VerifyPage() {
             transition={{ delay: 0.3 }}
             className="space-y-6"
           >
-            {/* Stats */}
+            {/* Verification Status - Hidden from public view */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <Users className="w-6 h-6 mr-2 text-gray-600" />
-                Verification Stats
+                Verification System
               </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{stats.totalScanned}</div>
-                  <div className="text-sm text-blue-800">Total Scanned</div>
-                </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{stats.validTickets}</div>
-                  <div className="text-sm text-green-800">Valid Tickets</div>
-                </div>
-                <div className="text-center p-4 bg-red-50 rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">{stats.invalidTickets}</div>
-                  <div className="text-sm text-red-800">Invalid Tickets</div>
-                </div>
-                <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                  <div className="text-2xl font-bold text-yellow-600">{stats.duplicateAttempts}</div>
-                  <div className="text-sm text-yellow-800">Duplicates</div>
-                </div>
+              <div className="text-center p-6">
+                <div className="text-lg text-gray-600">System Ready</div>
+                <div className="text-sm text-gray-500 mt-2">Scan tickets to verify authenticity</div>
               </div>
             </div>
 
@@ -321,14 +307,14 @@ export default function VerifyPage() {
                       key={verification.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`p-3 rounded-lg border ${getStatusColor(verification.status)}`}
+                      className="p-3 rounded-lg border bg-gray-50 border-gray-200"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          {getStatusIcon(verification.status)}
+                          <CheckCircle className="w-5 h-5 text-gray-500" />
                           <div className="ml-3">
                             <p className="font-medium text-sm">{verification.ticketId}</p>
-                            <p className="text-xs opacity-75">{verification.message}</p>
+                            <p className="text-xs opacity-75">Ticket processed</p>
                           </div>
                         </div>
                         <div className="text-xs opacity-75">
