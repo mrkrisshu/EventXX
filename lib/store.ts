@@ -334,6 +334,18 @@ export const useAppStore = create<AppState>()(
                 eventDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
                 location: "Modern Art Museum",
                 isActive: true
+              },
+              {
+                id: 5,
+                name: "Team1 Avalanche",
+                description: "Exclusive Team1 Avalanche hackathon demo event showcasing innovative blockchain solutions and NFT ticketing system. Join us for networking and tech demonstrations.",
+                organizer: "0x5678901234567890123456789012345678901234",
+                price: "0.02",
+                maxTickets: 150,
+                soldTickets: 25,
+                eventDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                location: "Avalanche Innovation Center",
+                isActive: true
               }
             ]
           }
@@ -380,6 +392,18 @@ export const useAppStore = create<AppState>()(
               soldTickets: 200,
               eventDate: Math.floor(Date.now() / 1000) + 86400 * 15,
               location: 'New York, NY',
+              isActive: true
+            },
+            {
+              id: 3,
+              name: 'Team1 Avalanche',
+              description: 'Exclusive Team1 Avalanche hackathon demo event showcasing innovative blockchain solutions and NFT ticketing system',
+              organizer: '0x5678901234567890123456789012345678901234',
+              price: '0.02',
+              maxTickets: 150,
+              soldTickets: 25,
+              eventDate: Math.floor(Date.now() / 1000) + 86400 * 30,
+              location: 'Avalanche Innovation Center',
               isActive: true
             }
           ]

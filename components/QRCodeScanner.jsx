@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Camera, Check, X, AlertTriangle, Scan, StopCircle } from 'lucide-react'
 // Temporarily disable QR scanner for build
 // import QrScanner from 'qr-scanner'
-import { verifyQRSignature } from '@/lib/metadata'
+import { MetadataService } from '@/lib/metadata'
 
 export function QRCodeScanner({ onScan, onError }) {
   const [isScanning, setIsScanning] = useState(false)
@@ -13,6 +13,8 @@ export function QRCodeScanner({ onScan, onError }) {
   const [scanResult, setScanResult] = useState(null)
   const [error, setError] = useState('')
   const [hasCamera, setHasCamera] = useState(true)
+  const [manualInput, setManualInput] = useState('')
+  const [showManualInput, setShowManualInput] = useState(true)
   const videoRef = useRef(null)
   const scannerRef = useRef(null)
 
@@ -126,6 +128,21 @@ export function QRCodeScanner({ onScan, onError }) {
   }
 
   const handleQRDetected = async (qrData) => {
+    // Handle simple string codes (manual input)
+    if (typeof qrData === 'string') {
+      setScanResult({
+        success: true,
+        data: { ticketId: qrData, eventId: 'EVENT_TEAM1', owner: '0x1234567890123456789012345678901234567890' },
+        message: 'Ticket code entered manually'
+      })
+
+      if (onScan) {
+        onScan(qrData) // Pass the string directly
+      }
+      return
+    }
+
+    // Handle QR code JSON data
     const normalized = normalizeQRPayload(qrData)
     if (!normalized || !normalized.ticketId || !normalized.eventId) {
       setScanResult({ success: false, message: 'Invalid QR code data' })
@@ -144,7 +161,7 @@ export function QRCodeScanner({ onScan, onError }) {
           isUsed: normalized.isUsed,
           signature: normalized.signature
         })
-        validSignature = verifyQRSignature(sigPayload)
+        validSignature = MetadataService.verifyQRSignature(sigPayload)
       }
     } catch {}
 
@@ -164,31 +181,73 @@ export function QRCodeScanner({ onScan, onError }) {
     }, 800)
   }
 
+  const handleManualSubmit = (e) => {
+    e.preventDefault()
+    if (manualInput.trim()) {
+      handleQRDetected(manualInput.trim())
+      setManualInput('')
+    }
+  }
+
   return (
     <div className="bg-black rounded-2xl p-6 shadow-lg border border-gray-800">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-bold text-white flex items-center">
           <Scan className="w-6 h-6 mr-2 text-gray-400" />
-          QR Code Scanner
+          Ticket Scanner
         </h3>
-        {isScanning ? (
+        <div className="flex gap-2">
           <button
-            onClick={stopScanning}
-            className="flex items-center px-3 py-2 bg-black text-white rounded-lg hover:bg-black/80 border border-gray-700 transition-colors"
+            onClick={() => setShowManualInput(!showManualInput)}
+            className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <StopCircle className="w-4 h-4 mr-2" />
-            Stop Scan
+            Manual Input
           </button>
-        ) : (
-          <button
-            onClick={startScanning}
-            className="flex items-center px-3 py-2 bg-black text-white rounded-lg hover:bg-black/80 border border-gray-700 transition-colors"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            Start Scan
-          </button>
-        )}
+          {isScanning ? (
+            <button
+              onClick={stopScanning}
+              className="flex items-center px-3 py-2 bg-black text-white rounded-lg hover:bg-black/80 border border-gray-700 transition-colors"
+            >
+              <StopCircle className="w-4 h-4 mr-2" />
+              Stop Scan
+            </button>
+          ) : (
+            <button
+              onClick={startScanning}
+              className="flex items-center px-3 py-2 bg-black text-white rounded-lg hover:bg-black/80 border border-gray-700 transition-colors"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              Start Scan
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Manual Input Section */}
+      {showManualInput && (
+        <div className="mb-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+          <h4 className="text-white font-semibold mb-3">Enter Ticket Code Manually</h4>
+          <form onSubmit={handleManualSubmit} className="flex gap-2">
+            <input
+              type="text"
+              value={manualInput}
+              onChange={(e) => setManualInput(e.target.value)}
+              placeholder="Enter ticket code (e.g., TEAM1-DEMO-001)"
+              className="flex-1 px-3 py-2 bg-black border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            />
+            <button
+              type="submit"
+              disabled={!manualInput.trim()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+            >
+              Verify
+            </button>
+          </form>
+          <div className="mt-2 text-sm text-gray-400">
+            Valid codes: TEAM1-DEMO-001, TEAM1-DEMO-002, TEAM1-DEMO-003, AVAX-TICKET-001, AVAX-TICKET-002
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center p-4 bg-black/60 border border-gray-700 rounded-lg mb-4">

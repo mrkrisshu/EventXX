@@ -1,28 +1,30 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Shield, Users, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 import { QRCodeScanner } from '../../components/QRCodeScanner'
 import { useAccount } from 'wagmi'
+import { EventTicketsService, getProvider } from '../../lib/contracts'
+import { useAppStore } from '../../lib/store'
 
-// Mock verification database
-const mockVerifiedTickets = new Set()
-const mockEventData = {
-  'EVENT_123': {
-    id: 'EVENT_123',
-    title: 'Blockchain Summit 2025',
-    date: '2025-09-15',
-    location: 'San Francisco Convention Center',
-    totalTickets: 1000,
-    checkedIn: 0
-  }
-}
+// Demo codes for testing (fallback when blockchain is unavailable)
+const demoValidCodes = [
+  'TEAM1-DEMO-001',
+  'TEAM1-DEMO-002', 
+  'TEAM1-DEMO-003',
+  'AVAX-TICKET-001',
+  'AVAX-TICKET-002'
+]
 
 export default function VerifyPage() {
   const { address, isConnected } = useAccount()
+  const { events, loadEvents } = useAppStore()
   const [verificationHistory, setVerificationHistory] = useState<any[]>([])
-  const [currentEvent, setCurrentEvent] = useState('EVENT_123')
+  const [currentEvent, setCurrentEvent] = useState<any>(null)
+  const [usedTickets, setUsedTickets] = useState(new Set<string>())
+  const [blockchainConnected, setBlockchainConnected] = useState(false)
+  const [eventService, setEventService] = useState<EventTicketsService | null>(null)
   const [stats, setStats] = useState({
     totalScanned: 0,
     validTickets: 0,
@@ -30,46 +32,133 @@ export default function VerifyPage() {
     duplicateAttempts: 0
   })
 
-  const handleTicketScan = (ticketData: any) => {
+  // Load events and initialize blockchain connection
+  useEffect(() => {
+    const initializeBlockchain = async () => {
+      try {
+        const provider = await getProvider(true)
+        if (provider) {
+          const service = new EventTicketsService(provider)
+          setEventService(service)
+          setBlockchainConnected(true)
+          
+          // Load events from blockchain
+          await loadEvents()
+        }
+      } catch (error) {
+        console.warn('Blockchain connection failed, using demo mode:', error)
+        setBlockchainConnected(false)
+      }
+    }
+
+    initializeBlockchain()
+  }, [])
+
+  // Set current event when events are loaded
+  useEffect(() => {
+    if (events && events.length > 0 && !currentEvent) {
+      // Find Team1 Avalanche event or use first event
+      const team1Event = events.find(e => e.name.toLowerCase().includes('team1') || e.name.toLowerCase().includes('avalanche'))
+      setCurrentEvent(team1Event || events[0])
+    }
+  }, [events, currentEvent])
+
+  const handleTicketScan = async (ticketData: any) => {
     const timestamp = new Date().toLocaleTimeString()
-    const ticketKey = `${ticketData.ticketId}_${ticketData.eventId}`
+    
+    // Handle both QR code data and simple string codes
+    let ticketId, eventId, ownerAddress
+    
+    if (typeof ticketData === 'string') {
+      // Simple string code like 'TEAM1-DEMO-001'
+      ticketId = ticketData
+      eventId = currentEvent?.id || 'demo'
+      ownerAddress = '0x1234567890123456789012345678901234567890'
+    } else {
+      // QR code object data
+      ticketId = ticketData.ticketId || ticketData.tokenId || ticketData.id
+      eventId = ticketData.eventId || currentEvent?.id || 'demo'
+      ownerAddress = ticketData.owner || ticketData.ownerAddress || '0x1234567890123456789012345678901234567890'
+    }
+    
+    const ticketKey = `${ticketId}_${eventId}`
     
     let verification = {
       id: Date.now(),
       timestamp,
-      ticketId: ticketData.ticketId,
-      eventId: ticketData.eventId,
-      ownerAddress: ticketData.owner || ticketData.ownerAddress,
+      ticketId,
+      eventId,
+      ownerAddress,
       status: 'valid',
       message: 'Ticket verified successfully'
     }
 
     // Check if ticket was already scanned
-    if (mockVerifiedTickets.has(ticketKey)) {
+    if (usedTickets.has(ticketKey)) {
       verification = {
         ...verification,
         status: 'duplicate',
         message: 'Ticket already used'
       }
       setStats(prev => ({ ...prev, totalScanned: prev.totalScanned + 1, duplicateAttempts: prev.duplicateAttempts + 1 }))
-    }
-    // Check if ticket belongs to current event
-    else if (String(ticketData.eventId) !== String(currentEvent)) {
-      verification = {
-        ...verification,
-        status: 'invalid',
-        message: 'Ticket not valid for this event'
+    } else {
+      // Try blockchain verification first
+      let isValid = false
+      let errorMessage = ''
+      
+      if (blockchainConnected && eventService && typeof ticketData === 'object' && ticketData.tokenId) {
+        try {
+          // For blockchain tickets, check if token exists and is not used
+          const tokenId = parseInt(ticketData.tokenId)
+          if (!isNaN(tokenId)) {
+            // This would require a contract method to check ticket validity
+            // For now, we'll assume QR code tickets from blockchain are valid
+            isValid = true
+          }
+        } catch (error) {
+          console.warn('Blockchain verification failed:', error)
+          errorMessage = 'Blockchain verification failed'
+        }
       }
-      setStats(prev => ({ ...prev, totalScanned: prev.totalScanned + 1, invalidTickets: prev.invalidTickets + 1 }))
-    }
-    // Valid ticket
-    else {
-      mockVerifiedTickets.add(ticketKey)
-      setStats(prev => ({ 
-        ...prev, 
-        totalScanned: prev.totalScanned + 1, 
-        validTickets: prev.validTickets + 1 
-      }))
+      
+      // Fallback to demo code validation
+      if (!isValid && typeof ticketData === 'string') {
+        isValid = demoValidCodes.includes(String(ticketId))
+        if (!isValid) {
+          errorMessage = 'Invalid ticket code'
+        }
+      }
+      
+      if (!isValid) {
+        verification = {
+          ...verification,
+          status: 'invalid',
+          message: errorMessage || 'Invalid ticket'
+        }
+        setStats(prev => ({ ...prev, totalScanned: prev.totalScanned + 1, invalidTickets: prev.invalidTickets + 1 }))
+      } else {
+        // Valid ticket - mark as used
+        setUsedTickets(prev => new Set([...prev, ticketKey]))
+        setStats(prev => ({ 
+          ...prev, 
+          totalScanned: prev.totalScanned + 1, 
+          validTickets: prev.validTickets + 1 
+        }))
+        
+        // If blockchain connected and it's a real ticket, mark as used on blockchain
+        if (blockchainConnected && eventService && typeof ticketData === 'object' && ticketData.tokenId) {
+          try {
+            const tokenId = parseInt(ticketData.tokenId)
+            if (!isNaN(tokenId)) {
+              // Note: This would require the user to have the ticket and sign the transaction
+              // For demo purposes, we'll just log it
+              console.log('Would mark ticket as used on blockchain:', tokenId)
+            }
+          } catch (error) {
+            console.warn('Failed to mark ticket as used on blockchain:', error)
+          }
+        }
+      }
     }
 
     setVerificationHistory(prev => [verification, ...prev.slice(0, 9)]) // Keep last 10 entries
@@ -143,20 +232,35 @@ export default function VerifyPage() {
           className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20"
         >
           <h2 className="text-xl font-bold text-white mb-2">Current Event</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-white/80">
-            <div>
-              <p className="font-semibold">{mockEventData[currentEvent]?.title}</p>
-              <p className="text-sm">{mockEventData[currentEvent]?.location}</p>
+          {currentEvent ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-white/80">
+              <div>
+                <p className="font-semibold">{currentEvent.name}</p>
+                <p className="text-sm">{currentEvent.location}</p>
+                {blockchainConnected && (
+                  <p className="text-xs text-green-300 mt-1">🔗 Blockchain Connected</p>
+                )}
+              </div>
+              <div>
+                <p className="text-sm">Date</p>
+                <p className="font-semibold">
+                  {new Date(currentEvent.eventDate * 1000).toLocaleDateString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm">Capacity</p>
+                <p className="font-semibold">{currentEvent.maxTickets} tickets</p>
+                <p className="text-xs">Sold: {currentEvent.soldTickets}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm">Date</p>
-              <p className="font-semibold">{mockEventData[currentEvent]?.date}</p>
+          ) : (
+            <div className="text-white/60">
+              <p>Loading event data...</p>
+              {!blockchainConnected && (
+                <p className="text-yellow-300 text-sm mt-2">⚠️ Using demo mode - blockchain unavailable</p>
+              )}
             </div>
-            <div>
-              <p className="text-sm">Capacity</p>
-              <p className="font-semibold">{mockEventData[currentEvent]?.totalTickets} tickets</p>
-            </div>
-          </div>
+          )}
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
